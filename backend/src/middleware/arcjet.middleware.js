@@ -3,6 +3,12 @@ import { isSpoofedBot } from "@arcjet/inspect";
 
 export const arcjetProtection = async (req, res, next) => {
   try {
+    //for develoment puporse only for postman testing
+    if (req.headers["user-agent"]?.includes("PostmanRuntime")) {
+      return next();
+    }
+    
+
     const decision = await aj.protect(req);
     if (decision.isDenied()) {
       if (decision.reason.isRateLimit()) {
