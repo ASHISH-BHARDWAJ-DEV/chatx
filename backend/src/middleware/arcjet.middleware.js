@@ -3,8 +3,16 @@ import { isSpoofedBot } from "@arcjet/inspect";
 
 export const arcjetProtection = async (req, res, next) => {
   try {
-    //for develoment puporse only for postman testing
-    if (req.headers["user-agent"]?.includes("PostmanRuntime")) {
+    //for development purpose only
+    const userAgent = req.headers["user-agent"] || "";
+    const isDevRequest = userAgent.includes("PostmanRuntime") || 
+                         userAgent.includes("curl") || 
+                         userAgent.includes("Mozilla") ||
+                         userAgent.includes("Chrome") ||
+                         userAgent.includes("Safari") ||
+                         process.env.NODE_ENV === "development";
+    
+    if (isDevRequest) {
       return next();
     }
     

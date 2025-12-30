@@ -6,9 +6,6 @@
   "scripts": {
     "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "npm run start --prefix backend"
-    
-   
-
   },
   "repository": {
     "type": "git",
@@ -21,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/ASHISH-BHARDWAJ-DEV/chatx/issues"
   },
-  "homepage": "https://github.com/ASHISH-BHARDWAJ-DEV/chatx#readme"
+  "homepage": "https://github.com/ASHISH-BHARDWAJ-DEV/chatx#readme",
+  "dependencies": {
+    "lucide-react": "^0.562.0",
+    "react-hot-toast": "^2.6.0"
+  }
 }
