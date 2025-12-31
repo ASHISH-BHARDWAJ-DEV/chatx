@@ -95,22 +95,53 @@ export const useChatStore = create((set, get) => ({
 
 
   subscribeToMessages: () => {
-    const { selectedUser, isSoundEnabled } = get();
+    const { selectedUser, isSoundEnabled, messages, chats } = get();
     if (!selectedUser) return;
 
     const socket = useAuthStore.getState().socket;
 
     socket.on("newMessage", (newMessage) => {
       const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
-      if (!isMessageSentFromSelectedUser) return;
+      
+      // Always add message to chat if it's from selected user
+      if (isMessageSentFromSelectedUser) {
+        const currentMessages = get().messages;
+        set({ messages: [...currentMessages, newMessage] });
+      }
 
-      const currentMessages = get().messages;
-      set({ messages: [...currentMessages, newMessage] });
+      // Update chats list to show latest message and move chat to top
+      const updatedChats = chats.map(chat => {
+        const isFromThisChat = 
+          newMessage.senderId === chat._id || 
+          newMessage.receiverId === chat._id;
+        
+        if (isFromThisChat) {
+          return {
+            ...chat,
+            lastMessage: {
+              text: newMessage.text || (newMessage.image ? "Image" : ""),
+              senderId: newMessage.senderId,
+              createdAt: newMessage.createdAt
+            }
+          };
+        }
+        return chat;
+      });
 
-      if (isSoundEnabled) {
+      // Move chat with new message to top
+      const chatWithNewMessage = updatedChats.find(
+        chat => newMessage.senderId === chat._id || newMessage.receiverId === chat._id
+      );
+      
+      if (chatWithNewMessage) {
+        const filteredChats = updatedChats.filter(c => c._id !== chatWithNewMessage._id);
+        set({ chats: [chatWithNewMessage, ...filteredChats] });
+      }
+
+      // Play notification sound for messages from other users
+      if (!isMessageSentFromSelectedUser && isSoundEnabled) {
         const notificationSound = new Audio("/sounds/notification.mp3");
-
-        notificationSound.currentTime = 0; // reset to start
+        notificationSound.currentTime = 0;
         notificationSound.play().catch((e) => console.log("Audio play failed:", e));
       }
     });
