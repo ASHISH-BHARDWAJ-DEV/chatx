@@ -78,16 +78,16 @@ export const useChatStore = create((set, get) => ({
       text: messageData.text,
       image: messageData.image,
       createdAt: new Date().toISOString(),
-      isOptimistic: true, // flag to identify optimistic messages (optional)
+      isOptimistic: true,
     };
-    // immidetaly update the ui by adding the message
+    
     set({ messages: [...messages, optimisticMessage] });
 
     try {
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
       set({ messages: messages.concat(res.data) });
     } catch (error) {
-      // remove optimistic message on failure
+     
       set({ messages: messages });
       toast.error(error.response?.data?.message || "Something went wrong");
     }
@@ -103,13 +103,13 @@ export const useChatStore = create((set, get) => ({
     socket.on("newMessage", (newMessage) => {
       const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
       
-      // Always add message to chat if it's from selected user
+     
       if (isMessageSentFromSelectedUser) {
         const currentMessages = get().messages;
         set({ messages: [...currentMessages, newMessage] });
       }
 
-      // Update chats list to show latest message and move chat to top
+     
       const updatedChats = chats.map(chat => {
         const isFromThisChat = 
           newMessage.senderId === chat._id || 
@@ -128,7 +128,7 @@ export const useChatStore = create((set, get) => ({
         return chat;
       });
 
-      // Move chat with new message to top
+     
       const chatWithNewMessage = updatedChats.find(
         chat => newMessage.senderId === chat._id || newMessage.receiverId === chat._id
       );
@@ -138,7 +138,7 @@ export const useChatStore = create((set, get) => ({
         set({ chats: [chatWithNewMessage, ...filteredChats] });
       }
 
-      // Play notification sound for messages from other users
+     
       if (!isMessageSentFromSelectedUser && isSoundEnabled) {
         const notificationSound = new Audio("/sounds/notification.mp3");
         notificationSound.currentTime = 0;

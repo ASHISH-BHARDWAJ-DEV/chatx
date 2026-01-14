@@ -6,13 +6,18 @@ dotenv.config();
 export const socketAuthMiddleware = async (socket, next) => {
   try {
     // extract token from http-only cookies
-    const token = socket.handshake.headers.cookie
+    // Cookie is named "token" (not "jwt")
+    const cookieHeader = socket.handshake.headers.cookie;
+    console.log("Socket handshake cookies:", cookieHeader);
+    
+    const token = cookieHeader
       ?.split("; ")
-      .find((row) => row.startsWith("jwt="))
+      .find((row) => row.startsWith("token="))
       ?.split("=")[1];
 
     if (!token) {
       console.log("Socket connection rejected: No token provided");
+      console.log("Available cookies:", cookieHeader);
       return next(new Error("Unauthorized - No Token Provided"));
     }
 

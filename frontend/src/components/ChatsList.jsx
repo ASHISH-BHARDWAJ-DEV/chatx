@@ -35,7 +35,7 @@ function ChatsList() {
       {chats.map((chat) => (
         <div
           key={chat._id}
-          className="bg-cyan-500/10 p-4 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition-colors"
+          className="bg-gray-800/50 p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors"
           onClick={() => setSelectedUser(chat)}
         >
           <div className="flex items-center gap-3">
@@ -46,15 +46,15 @@ function ChatsList() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <h4 className="text-slate-200 font-medium truncate">{chat.fullName}</h4>
+                <h4 className="text-white font-medium truncate">{chat.fullName}</h4>
                 {chat.lastMessage && (
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-gray-400">
                     {formatLastMessageTime(chat.lastMessage.createdAt)}
                   </span>
                 )}
               </div>
               {chat.lastMessage && (
-                <p className="text-sm text-slate-400 truncate mt-1">
+                <p className="text-sm text-gray-400 truncate mt-1">
                   {chat.lastMessage.senderId === authUser?._id ? "You: " : ""}
                   {chat.lastMessage.text || "Image"}
                 </p>
